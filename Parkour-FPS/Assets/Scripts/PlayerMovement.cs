@@ -66,9 +66,6 @@ public class PlayerMovement : MonoBehaviour {
         Look();
     }
 
-    /// <summary>
-    /// Find user input. Should put this in its own class but im lazy
-    /// </summary>
     private void MyInput() {
         x = Input.GetAxisRaw("Horizontal");
         y = Input.GetAxisRaw("Vertical");
@@ -209,11 +206,6 @@ public class PlayerMovement : MonoBehaviour {
         }
     }
 
-    /// <summary>
-    /// Find the velocity relative to where the player is looking
-    /// Useful for vectors calculations regarding movement and limiting movement
-    /// </summary>
-    /// <returns></returns>
     public Vector2 FindVelRelativeToLook() {
         float lookAngle = orientation.transform.eulerAngles.y;
         float moveAngle = Mathf.Atan2(rb.linearVelocity.x, rb.linearVelocity.z) * Mathf.Rad2Deg;
@@ -235,9 +227,6 @@ public class PlayerMovement : MonoBehaviour {
 
     private bool cancellingGrounded;
     
-    /// <summary>
-    /// Handle ground detection
-    /// </summary>
     private void OnCollisionStay(Collision other) {
         //Make sure we are only checking for walkable layers
         int layer = other.gameObject.layer;
