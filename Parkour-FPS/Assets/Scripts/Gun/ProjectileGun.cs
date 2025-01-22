@@ -99,6 +99,7 @@ public class ProjectileGun : MonoBehaviour
         GameObject currentBullet = Instantiate(bullet, attackPoint.position, Quaternion.identity); //store instantiated bullet in currentBullet
         //Rotate bullet to shoot direction
         currentBullet.transform.forward = directionWithSpread.normalized;
+        currentBullet.transform.rotation = Quaternion.Euler(90, currentBullet.transform.rotation.eulerAngles.y, currentBullet.transform.rotation.eulerAngles.z);
 
         //Add forces to bullet
         currentBullet.GetComponent<Rigidbody>().AddForce(directionWithSpread.normalized * shootForce, ForceMode.Impulse);
