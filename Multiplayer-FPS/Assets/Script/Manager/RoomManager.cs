@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using UnityEngine;
 using Photon.Pun;
 using Hashtable = ExitGames.Client.Photon.Hashtable;
+using Photon.Realtime;
 
 
 public class RoomManager : MonoBehaviourPunCallbacks
@@ -23,6 +24,8 @@ public class RoomManager : MonoBehaviourPunCallbacks
     [HideInInspector] public int kills;
     [HideInInspector] public int deaths;
 
+    public string roomNameToJoin = "test";
+
     private void Awake()
     {
         if (instance != null && instance != this)
@@ -42,31 +45,19 @@ public class RoomManager : MonoBehaviourPunCallbacks
 
     public void JoinRoomButtonPressed()
     {
-        Debug.Log("Connecting to server...");
-
-        PhotonNetwork.ConnectUsingSettings();
-
-        NameUI.SetActive(false);
-        ConnectingUI.SetActive(true);
+        if (PhotonNetwork.IsConnectedAndReady)
+        {
+            Debug.Log("Connecting to server...");
+            PhotonNetwork.JoinOrCreateRoom(roomNameToJoin, new RoomOptions(), TypedLobby.Default);
+            NameUI.SetActive(false);
+            ConnectingUI.SetActive(true);
+        }
+        else
+        {
+            Debug.LogError("Photon Network is not ready. Wait for OnConnectedToMaster or OnJoinedLobby.");
+        }
     }
 
-    public override void OnConnectedToMaster()
-    {
-        base.OnConnectedToMaster();
-
-        Debug.Log("Connected to server!");
-
-        PhotonNetwork.JoinLobby();
-    }
-
-    public override void OnJoinedLobby()
-    {
-        base.OnJoinedLobby();
-
-        Debug.Log("We're in the lobby");
-
-        PhotonNetwork.JoinOrCreateRoom("test", null, null);
-    }
 
     public override void OnJoinedRoom()
     {
