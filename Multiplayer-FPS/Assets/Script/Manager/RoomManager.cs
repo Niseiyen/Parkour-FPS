@@ -8,7 +8,7 @@ public class RoomManager : MonoBehaviourPunCallbacks
     public static RoomManager instance;
 
     [SerializeField] private GameObject player;
-    [SerializeField] private Transform spawnPoint;
+    [SerializeField] private Transform[] spawnPoints;
 
     [SerializeField] private GameObject roomCam;
 
@@ -76,6 +76,8 @@ public class RoomManager : MonoBehaviourPunCallbacks
 
     public void SpawnPlayer()
     {
+        Transform spawnPoint = spawnPoints[UnityEngine.Random.Range(0, spawnPoints.Length)];
+
         GameObject _player = PhotonNetwork.Instantiate(player.name, spawnPoint.position, spawnPoint.rotation);
         _player.GetComponent<PlayerSetup>().IsLocalPlayer();
         _player.GetComponent<Health>().isLocalPlayer = true;
