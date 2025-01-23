@@ -6,7 +6,7 @@ using TMPro;
 
 public class Health : MonoBehaviour
 {
-    [SerializeField] private int health = 100;
+    public int health = 100;
     public bool isLocalPlayer;
 
     [Header("UI")]
@@ -24,6 +24,9 @@ public class Health : MonoBehaviour
             if(isLocalPlayer)
             {
                 RoomManager.instance.SpawnPlayer();
+
+                RoomManager.instance.deaths++;
+                RoomManager.instance.SetHashes();
             }
 
             Destroy(gameObject);

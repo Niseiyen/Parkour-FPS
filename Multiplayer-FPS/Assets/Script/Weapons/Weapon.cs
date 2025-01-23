@@ -2,6 +2,7 @@ using Photon.Pun;
 using System.Collections;
 using UnityEngine;
 using TMPro;
+using Photon.Pun.UtilityScripts;
 
 public class Weapon : MonoBehaviour
 {
@@ -123,6 +124,14 @@ public class Weapon : MonoBehaviour
 
             if (hit.transform.gameObject.GetComponent<Health>())
             {
+                PhotonNetwork.LocalPlayer.AddScore(damage);
+
+                if (damage >= hit.transform.gameObject.GetComponent<Health>().health)
+                {
+                    RoomManager.instance.kills++;
+                    RoomManager.instance.SetHashes();
+                }
+
                 hit.transform.gameObject.GetComponent<PhotonView>().RPC("TakeDamage", RpcTarget.All, damage);
             }
         }
@@ -153,4 +162,15 @@ public class Weapon : MonoBehaviour
             recovering = false;
         }
     }
+
+    public void InitializeWeapon()
+    {
+        originalPosition = transform.localPosition;
+        recoilLength = 0;
+        recoverLength = 1 / fireRate * recoverPercent;
+
+        recoiling = false;
+        recovering = false;
+    }
+
 }
