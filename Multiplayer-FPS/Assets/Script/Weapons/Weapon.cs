@@ -71,7 +71,7 @@ public class Weapon : MonoBehaviour
             Shoot();
         }
 
-        if (Input.GetKeyDown(KeyCode.R) && !isReloading && mag > 0)
+        if (Input.GetKeyDown(KeyCode.R) && !isReloading && mag > 0 && ammo != magAmmo)
         {
             StartCoroutine(Reload());
         }

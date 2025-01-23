@@ -46,7 +46,7 @@ public class Leaderboard : MonoBehaviour
            nameTexts[i].text = player.NickName;
            scoreTexts[i].text = player.GetScore().ToString();
 
-            if (player.CustomProperties["Kills"] == null)
+            if (player.CustomProperties["kills"] != null)
             {
                 KDTexts[i].text = player.CustomProperties["kills"].ToString() + "/" + player.CustomProperties["deaths"].ToString();
             } 
