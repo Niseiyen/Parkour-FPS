@@ -8,10 +8,9 @@ public class Movement : MonoBehaviour
     [SerializeField] private float runSpeed = 14f;
     [SerializeField] private float maxVelocityChange = 10.0f;
     [SerializeField] private float jumpHeight = 5.0f;
-    [SerializeField] private float airControl = 0.5f;
 
     private Vector2 input;
-    private Rigidbody rigidbody;
+    private Rigidbody rb;
 
     private bool sprinting;
     private bool jumping;
@@ -21,7 +20,7 @@ public class Movement : MonoBehaviour
     // Start is called before the first frame update
     void Start()
     {
-        rigidbody = GetComponent<Rigidbody>();
+        rb = GetComponent<Rigidbody>();
     }
 
     // Update is called once per frame
@@ -45,30 +44,30 @@ public class Movement : MonoBehaviour
         {
             if (jumping)
             {
-                rigidbody.velocity = new Vector3(rigidbody.velocity.x, jumpHeight, rigidbody.velocity.z);
+                rb.velocity = new Vector3(rb.velocity.x, jumpHeight, rb.velocity.z);
             }
             else if (input.magnitude > 0.5f)
             {
-                rigidbody.AddForce(CalculateMovement(sprinting ? runSpeed : walkSpeed), ForceMode.VelocityChange);
+                rb.AddForce(CalculateMovement(sprinting ? runSpeed : walkSpeed), ForceMode.VelocityChange);
             }
             else
             {
-                var velocity1 = rigidbody.velocity;
+                var velocity1 = rb.velocity;
                 velocity1 = new Vector3(velocity1.x * 0.2f * Time.fixedDeltaTime, velocity1.y, velocity1.z * 0.2f * Time.fixedDeltaTime);
-                rigidbody.velocity = velocity1;
+                rb.velocity = velocity1;
             }
         } 
         else
         {
             if (input.magnitude > 0.5f)
             {
-                rigidbody.AddForce(CalculateMovement(sprinting ? runSpeed : walkSpeed), ForceMode.VelocityChange);
+                rb.AddForce(CalculateMovement(sprinting ? runSpeed : walkSpeed), ForceMode.VelocityChange);
             }
             else
             {
-                var velocity1 = rigidbody.velocity;
+                var velocity1 = rb.velocity;
                 velocity1 = new Vector3(velocity1.x * 0.2f * Time.fixedDeltaTime, velocity1.y, velocity1.z * 0.2f * Time.fixedDeltaTime);
-                rigidbody.velocity = velocity1;
+                rb.velocity = velocity1;
             }
         }
         
@@ -82,7 +81,7 @@ public class Movement : MonoBehaviour
 
         targetVelocity *= _speed;
 
-        Vector3 velocity = rigidbody.velocity;
+        Vector3 velocity = rb.velocity;
 
         if (input.magnitude > 0.5f)
         {

@@ -5,10 +5,25 @@ using Photon.Pun;
 
 public class RoomManager : MonoBehaviourPunCallbacks
 {
+    public static RoomManager instance;
+
     [SerializeField] private GameObject player;
     [SerializeField] private Transform spawnPoint;
 
-    // Start is called before the first frame update
+    [SerializeField] private GameObject roomCam;
+
+    private void Awake()
+    {
+        if (instance != null && instance != this)
+        {
+            Destroy(this.gameObject);
+        }
+        else
+        {
+            instance = this;
+        }
+    }
+
     void Start()
     {
         Debug.Log("Connecting to server...");
@@ -40,7 +55,15 @@ public class RoomManager : MonoBehaviourPunCallbacks
 
         Debug.Log("Joined room and connected");
 
+        roomCam.SetActive(false);
+
+        SpawnPlayer();
+    }
+
+    public void SpawnPlayer()
+    {
         GameObject _player = PhotonNetwork.Instantiate(player.name, spawnPoint.position, spawnPoint.rotation);
         _player.GetComponent<PlayerSetup>().IsLocalPlayer();
+        _player.GetComponent<Health>().isLocalPlayer = true;
     }
 }
