@@ -973,3 +973,6 @@ MonoBehaviour:
   magAmmo: 30
   magText: {fileID: 8472444204303362402}
   ammoText: {fileID: 2252666444571243283}
+  recoverPercent: 0.7
+  recoilUp: 0.02
+  recoilBack: 0.08

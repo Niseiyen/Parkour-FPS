@@ -27,10 +27,29 @@ public class Weapon : MonoBehaviour
     private Animator animator;
     private bool isReloading = false;
 
+    [Header("Recoil Setting")]
+    [Range(0, 2)]
+    [SerializeField] private float recoverPercent = 0.7f;
+    [SerializeField] private float recoilUp = 1f;
+    [SerializeField] private float recoilBack = 0f;
+
+    private Vector3 originalPosition;
+    private Vector3 recoilVelocity = Vector3.zero;
+    private float recoilLength;
+    private float recoverLength;
+
+    private bool recoiling;
+    private bool recovering;
+
     private void Start()
     {
         UpdateWeaponUI();
         animator = GetComponent<Animator>();
+
+        originalPosition = transform.localPosition;
+
+        recoilLength = 0;
+        recoverLength = 1 / fireRate * recoverPercent;
     }
 
     void Update()
@@ -55,6 +74,16 @@ public class Weapon : MonoBehaviour
         {
             StartCoroutine(Reload());
         }
+
+        if (recoiling)
+        {
+            Recoil();
+        }
+
+        if (recovering)
+        {
+            Recovering();
+        }
     }
 
     private IEnumerator Reload()
@@ -62,7 +91,7 @@ public class Weapon : MonoBehaviour
         isReloading = true;
         animator.SetTrigger("Reload");
 
-        yield return new WaitForSeconds(animator.GetCurrentAnimatorStateInfo(0).length);
+        yield return new WaitForSeconds(0.5f);
 
         if (mag > 0)
         {
@@ -82,6 +111,9 @@ public class Weapon : MonoBehaviour
 
     private void Shoot()
     {
+        recoiling = true;
+        recovering = false;
+
         Ray ray = new Ray(camera.transform.position, camera.transform.forward);
 
         RaycastHit hit;
@@ -93,6 +125,32 @@ public class Weapon : MonoBehaviour
             {
                 hit.transform.gameObject.GetComponent<PhotonView>().RPC("TakeDamage", RpcTarget.All, damage);
             }
+        }
+    }
+
+    private void Recoil()
+    {
+        Vector3 finalPosition = new Vector3(originalPosition.x, originalPosition.y + recoilUp, originalPosition.z - recoilBack);
+
+        transform.localPosition = Vector3.SmoothDamp(transform.localPosition, finalPosition, ref recoilVelocity, recoilLength);
+
+        if(transform.localPosition == finalPosition)
+        {
+            recoiling = false;
+            recovering = true;
+        }
+    }
+
+    private void Recovering()
+    {
+        Vector3 finalPosition = originalPosition;
+
+        transform.localPosition = Vector3.SmoothDamp(transform.localPosition, finalPosition, ref recoilVelocity, recoverLength);
+
+        if (transform.localPosition == finalPosition)
+        {
+            recoiling = false;
+            recovering = false;
         }
     }
 }
