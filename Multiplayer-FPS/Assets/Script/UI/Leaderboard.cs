@@ -6,16 +6,13 @@ using Photon.Pun.UtilityScripts;
 
 public class Leaderboard : MonoBehaviour
 {
-    [SerializeField] private GameObject playerScordPanelHolder;
+    [SerializeField] private GameObject playerScorePanelHolder;
 
     [Header("Option")]
     [SerializeField] private float refreshRate = 1f;
 
     [Header("UI")]
-    [SerializeField] private GameObject[] slots;
-    [SerializeField] private TextMeshProUGUI[] nameTexts;
-    [SerializeField] private TextMeshProUGUI[] scoreTexts;
-    [SerializeField] private TextMeshProUGUI[] KDTexts;
+    [SerializeField] private LeaderboardSlot[] slots;
 
     private void Start()
     {
@@ -24,43 +21,52 @@ public class Leaderboard : MonoBehaviour
 
     public void Refresh()
     {
+        // Désactiver tous les slots
         foreach (var slot in slots)
         {
-            slot.SetActive(false);
+            slot.gameObject.SetActive(false);
         }
 
-        var sortedPlayers = (from player in PhotonNetwork.PlayerList
-                             orderby player.GetScore() descending
-                             select player).ToList();
+        // Trier les joueurs par score décroissant
+        var sortedPlayers = PhotonNetwork.PlayerList
+            .OrderByDescending(player => player.GetScore())
+            .ToList();
 
-        int i = 0;
-        foreach (var player in sortedPlayers)
+        // Activer et mettre à jour les slots pour les joueurs triés
+        for (int i = 0; i < sortedPlayers.Count && i < slots.Length; i++)
         {
-            slots[i].SetActive(true);
+            var player = sortedPlayers[i];
+            var slot = slots[i];
 
-            if(player.NickName == "")
-            {
-                player.NickName = "Unnamed";
-            }
-
-           nameTexts[i].text = player.NickName;
-           scoreTexts[i].text = player.GetScore().ToString();
-
-            if (player.CustomProperties["kills"] != null)
-            {
-                KDTexts[i].text = player.CustomProperties["kills"].ToString() + "/" + player.CustomProperties["deaths"].ToString();
-            } 
-            else
-            {
-                KDTexts[i].text = "0/0";
-            }
-            
-            i++;
+            slot.gameObject.SetActive(true);
+            slot.UpdateSlot(
+                player.NickName == "" ? "Unnamed" : player.NickName,
+                player.GetScore(),
+                player.CustomProperties.ContainsKey("kills") && player.CustomProperties.ContainsKey("deaths")
+                    ? $"{player.CustomProperties["kills"]}/{player.CustomProperties["deaths"]}"
+                    : "0/0"
+            );
         }
     }
 
     private void Update()
     {
-        playerScordPanelHolder.SetActive(Input.GetKey(KeyCode.Tab));
+        playerScorePanelHolder.SetActive(Input.GetKey(KeyCode.Tab));
+    }
+}
+
+[System.Serializable]
+public class LeaderboardSlot
+{
+    public GameObject gameObject;
+    public TextMeshProUGUI nameText;
+    public TextMeshProUGUI scoreText;
+    public TextMeshProUGUI kdText;
+
+    public void UpdateSlot(string name, int score, string kd)
+    {
+        nameText.text = name;
+        scoreText.text = score.ToString();
+        kdText.text = kd;
     }
 }

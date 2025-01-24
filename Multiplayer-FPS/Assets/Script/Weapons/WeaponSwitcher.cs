@@ -15,6 +15,8 @@ public class WeaponSwitcher : MonoBehaviour
     {
         int previousSelectedWeapon = selectedWeapon;
 
+        if (IsWeaponBusy()) return;
+
         if (Input.GetKeyDown(KeyCode.Alpha1))
         {
             selectedWeapon = 0;
@@ -24,29 +26,27 @@ public class WeaponSwitcher : MonoBehaviour
             selectedWeapon = 1;
         }
 
-        if(Input.GetAxis("Mouse ScrollWheel") > 0)
+        if (Input.GetAxis("Mouse ScrollWheel") > 0)
         {
-
             if (selectedWeapon >= transform.childCount - 1)
             {
                 selectedWeapon = 0;
             }
             else
             {
-                selectedWeapon+=1;
+                selectedWeapon++;
             }
         }
 
         if (Input.GetAxis("Mouse ScrollWheel") < 0)
         {
-
             if (selectedWeapon <= 0)
             {
                 selectedWeapon = transform.childCount - 1;
             }
             else
             {
-                selectedWeapon -= 1;
+                selectedWeapon--;
             }
         }
 
@@ -56,16 +56,30 @@ public class WeaponSwitcher : MonoBehaviour
         }
     }
 
+    private bool IsWeaponBusy()
+    {
+        foreach (Transform weaponTransform in transform)
+        {
+            Weapon weapon = weaponTransform.GetComponent<Weapon>();
+            if (weapon != null && weapon.isBusy)
+            {
+                return true;
+            }
+        }
+        return false;
+    }
+
     public void SelectWeapon()
     {
         int i = 0;
         foreach (Transform _weapon in transform)
         {
+            Weapon weapon = _weapon.GetComponent<Weapon>();
+
             if (i == selectedWeapon)
             {
                 _weapon.gameObject.SetActive(true);
 
-                Weapon weapon = _weapon.GetComponent<Weapon>();
                 if (weapon != null)
                 {
                     weapon.InitializeWeapon();
@@ -73,10 +87,15 @@ public class WeaponSwitcher : MonoBehaviour
             }
             else
             {
+                if (weapon != null)
+                {
+                    weapon.transform.localPosition = weapon.originalPosition;
+                }
                 _weapon.gameObject.SetActive(false);
             }
             i++;
         }
     }
+
 
 }

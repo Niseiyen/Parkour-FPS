@@ -15,18 +15,19 @@ public class Weapon : MonoBehaviour
 
     [Header("VFX")]
     [SerializeField] private GameObject hitVFX;
+    [SerializeField] private GameObject muzzleFlash;
+    [SerializeField] private Transform muzzlePoint;
 
     [Header("Ammo")]
-    [SerializeField] private int mag = 5;
     [SerializeField] private int ammo = 30;
-    [SerializeField] private int magAmmo = 30;
+    [SerializeField] private int maxAmmo = 30;
 
     [Header("UI")]
-    [SerializeField] private TextMeshProUGUI magText;
     [SerializeField] private TextMeshProUGUI ammoText;
 
     private Animator animator;
     private bool isReloading = false;
+    public bool isBusy { get; private set; } = false;
 
     [Header("Recoil Setting")]
     [Range(0, 2)]
@@ -34,7 +35,7 @@ public class Weapon : MonoBehaviour
     [SerializeField] private float recoilUp = 1f;
     [SerializeField] private float recoilBack = 0f;
 
-    private Vector3 originalPosition;
+    [HideInInspector] public Vector3 originalPosition;
     private Vector3 recoilVelocity = Vector3.zero;
     private float recoilLength;
     private float recoverLength;
@@ -71,7 +72,7 @@ public class Weapon : MonoBehaviour
             Shoot();
         }
 
-        if (Input.GetKeyDown(KeyCode.R) && !isReloading && mag > 0 && ammo != magAmmo)
+        if (Input.GetKeyDown(KeyCode.R) && !isReloading && ammo < 30)
         {
             StartCoroutine(Reload());
         }
@@ -90,30 +91,29 @@ public class Weapon : MonoBehaviour
     private IEnumerator Reload()
     {
         isReloading = true;
+        isBusy = true;
         animator.SetTrigger("Reload");
 
         yield return new WaitForSeconds(0.5f);
 
-        if (mag > 0)
-        {
-            mag--;
-            ammo = magAmmo;
-        }
+        ammo = 30;
 
         UpdateWeaponUI();
         isReloading = false;
+        isBusy = false; 
     }
 
     private void UpdateWeaponUI()
     {
-        magText.text = mag.ToString();
-        ammoText.text = ammo + " / " + magAmmo;
+        ammoText.text = ammo.ToString() + " / " + maxAmmo.ToString();
     }
 
     private void Shoot()
     {
         recoiling = true;
         recovering = false;
+
+        GameObject muzzleFlash = PhotonNetwork.Instantiate(this.muzzleFlash.name, muzzlePoint.position, Quaternion.identity);
 
         Ray ray = new Ray(camera.transform.position, camera.transform.forward);
 
@@ -143,7 +143,7 @@ public class Weapon : MonoBehaviour
 
         transform.localPosition = Vector3.SmoothDamp(transform.localPosition, finalPosition, ref recoilVelocity, recoilLength);
 
-        if(transform.localPosition == finalPosition)
+        if (transform.localPosition == finalPosition)
         {
             recoiling = false;
             recovering = true;
@@ -166,11 +166,11 @@ public class Weapon : MonoBehaviour
     public void InitializeWeapon()
     {
         originalPosition = transform.localPosition;
+        transform.localPosition = originalPosition;
         recoilLength = 0;
         recoverLength = 1 / fireRate * recoverPercent;
 
         recoiling = false;
         recovering = false;
     }
-
 }

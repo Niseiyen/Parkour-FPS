@@ -1,0 +1,22 @@
+fileFormatVersion: 2
+guid: 8df2113c9f0a60747963247ea6a722de
+TrueTypeFontImporter:
+  externalObjects: {}
+  serializedVersion: 4
+  fontSize: 16
+  forceTextureCase: -2
+  characterSpacing: 0
+  characterPadding: 1
+  includeFontData: 1
+  fontNames:
+  - Chocolate Grande
+  fallbackFontReferences:
+  - {fileID: 12800000, guid: a537089639fbec94ba9e675b246691b0, type: 3}
+  customCharacters: 
+  fontRenderingMode: 0
+  ascentCalculationMode: 1
+  useLegacyBoundsCalculation: 0
+  shouldRoundAdvanceValue: 1
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 
