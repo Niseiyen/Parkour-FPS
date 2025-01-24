@@ -107,7 +107,7 @@ public class Weapon : MonoBehaviour
         isBusy = false; 
     }
 
-    private void UpdateWeaponUI()
+    public void UpdateWeaponUI()
     {
         ammoText.text = ammo.ToString() + " / " + maxAmmo.ToString();
     }
@@ -165,6 +165,8 @@ public class Weapon : MonoBehaviour
         }
 
         muzzleFlashInstance.transform.position = initialPosition;
+
+        PhotonNetwork.Destroy(muzzleFlashInstance);
     }
 
     private void Recoil()

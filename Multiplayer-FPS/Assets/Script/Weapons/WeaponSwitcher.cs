@@ -83,6 +83,7 @@ public class WeaponSwitcher : MonoBehaviour
                 if (weapon != null)
                 {
                     weapon.InitializeWeapon();
+                    weapon.UpdateWeaponUI();
                 }
             }
             else
