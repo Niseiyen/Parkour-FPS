@@ -9,6 +9,8 @@ public class Weapon : MonoBehaviour
     [SerializeField] Camera camera;
 
     [SerializeField] private int damage;
+    [SerializeField] private int pelletsCount = 1;
+    [SerializeField] private float spreadMultiplier = 0f;
     [SerializeField] private float fireRate;
 
     private float nextFire;
@@ -19,8 +21,8 @@ public class Weapon : MonoBehaviour
     [SerializeField] private Transform muzzlePoint;
 
     [Header("Ammo")]
-    [SerializeField] private int ammo = 30;
-    [SerializeField] private int maxAmmo = 30;
+    [SerializeField] private int ammo;
+    [SerializeField] private int maxAmmo;
 
     [Header("UI")]
     [SerializeField] private TextMeshProUGUI ammoText;
@@ -94,9 +96,11 @@ public class Weapon : MonoBehaviour
         isBusy = true;
         animator.SetTrigger("Reload");
 
-        yield return new WaitForSeconds(0.5f);
+        AnimatorStateInfo stateInfo = animator.GetCurrentAnimatorStateInfo(0);
+        float reloadDuration = stateInfo.length - 0.2f; 
 
-        ammo = 30;
+        yield return new WaitForSeconds(reloadDuration);
+        ammo = maxAmmo;
 
         UpdateWeaponUI();
         isReloading = false;
@@ -113,28 +117,54 @@ public class Weapon : MonoBehaviour
         recoiling = true;
         recovering = false;
 
-        GameObject muzzleFlash = PhotonNetwork.Instantiate(this.muzzleFlash.name, muzzlePoint.position, Quaternion.identity);
+        GameObject muzzleFlashInstance = PhotonNetwork.Instantiate(this.muzzleFlash.name, muzzlePoint.position, Quaternion.identity);
 
-        Ray ray = new Ray(camera.transform.position, camera.transform.forward);
+        StartCoroutine(MoveMuzzleFlash(muzzleFlashInstance));
 
-        RaycastHit hit;
-        if (Physics.Raycast(ray.origin, ray.direction, out hit, 100f))
+        for (int i = 0; i < pelletsCount; i++)
         {
-            PhotonNetwork.Instantiate(hitVFX.name, hit.point, Quaternion.identity);
+            Vector3 splayOffset = Random.insideUnitCircle * spreadMultiplier;
+            splayOffset.z = 0;
 
-            if (hit.transform.gameObject.GetComponent<Health>())
+            Vector3 direction = camera.transform.forward + new Vector3(splayOffset.x, splayOffset.y, 0);
+            Ray ray = new Ray(camera.transform.position, direction);
+
+
+            RaycastHit hit;
+            if (Physics.Raycast(ray.origin, ray.direction, out hit, 100f))
             {
-                PhotonNetwork.LocalPlayer.AddScore(damage);
+                PhotonNetwork.Instantiate(hitVFX.name, hit.point, Quaternion.identity);
 
-                if (damage >= hit.transform.gameObject.GetComponent<Health>().health)
+                if (hit.transform.gameObject.GetComponent<Health>())
                 {
-                    RoomManager.instance.kills++;
-                    RoomManager.instance.SetHashes();
-                }
+                    PhotonNetwork.LocalPlayer.AddScore(damage);
 
-                hit.transform.gameObject.GetComponent<PhotonView>().RPC("TakeDamage", RpcTarget.All, damage);
+                    if (damage >= hit.transform.gameObject.GetComponent<Health>().health)
+                    {
+                        RoomManager.instance.kills++;
+                        RoomManager.instance.SetHashes();
+                    }
+
+                    hit.transform.gameObject.GetComponent<PhotonView>().RPC("TakeDamage", RpcTarget.All, damage);
+                }
             }
         }
+    }
+
+    private IEnumerator MoveMuzzleFlash(GameObject muzzleFlashInstance)
+    {
+        float time = 0f;
+        Vector3 initialPosition = muzzleFlashInstance.transform.position;
+        Vector3 randomOffset = new Vector3(Random.Range(-0.1f, 0.1f), Random.Range(-0.1f, 0.1f), 0f); 
+
+        while (time < 0.2f)
+        {
+            muzzleFlashInstance.transform.position = Vector3.Lerp(initialPosition, initialPosition + randomOffset, time / 0.2f);
+            time += Time.deltaTime;
+            yield return null;
+        }
+
+        muzzleFlashInstance.transform.position = initialPosition;
     }
 
     private void Recoil()
