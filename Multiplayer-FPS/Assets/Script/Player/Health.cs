@@ -6,6 +6,8 @@ using TMPro;
 
 public class Health : MonoBehaviour
 {
+    [SerializeField] DamageIndicator damageIndicator;
+
     public int health = 100;
     public bool isLocalPlayer;
 
@@ -14,9 +16,15 @@ public class Health : MonoBehaviour
 
 
     [PunRPC]
-    public void TakeDamage(int _damage)
+    public void TakeDamage(int _damage, Vector3 damagePosition)
     {
         health -= _damage;
+
+        damageIndicator.damageLocation = damagePosition;
+        GameObject indicator = Instantiate(damageIndicator.gameObject, damageIndicator.transform.position, damageIndicator.transform.rotation, 
+            damageIndicator.transform.parent);
+
+        indicator.SetActive(true);
 
         healthText.text = health.ToString();
         if (health <= 0)

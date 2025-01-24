@@ -145,7 +145,7 @@ public class Weapon : MonoBehaviour
                         RoomManager.instance.SetHashes();
                     }
 
-                    hit.transform.gameObject.GetComponent<PhotonView>().RPC("TakeDamage", RpcTarget.All, damage);
+                    hit.transform.gameObject.GetComponent<PhotonView>().RPC("TakeDamage", RpcTarget.All, damage, transform.position);
                 }
             }
         }
