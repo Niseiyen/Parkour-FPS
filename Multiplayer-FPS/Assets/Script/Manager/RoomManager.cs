@@ -48,7 +48,15 @@ public class RoomManager : MonoBehaviourPunCallbacks
         if (PhotonNetwork.IsConnectedAndReady)
         {
             Debug.Log("Connecting to server...");
-            PhotonNetwork.JoinOrCreateRoom(roomNameToJoin, new RoomOptions(), TypedLobby.Default);
+
+            RoomOptions roomOptions = new RoomOptions
+            {
+                MaxPlayers = 8, 
+                IsVisible = true, 
+                IsOpen = true     
+            };
+
+            PhotonNetwork.JoinOrCreateRoom(roomNameToJoin, roomOptions, TypedLobby.Default);
             NameUI.SetActive(false);
             ConnectingUI.SetActive(true);
         }

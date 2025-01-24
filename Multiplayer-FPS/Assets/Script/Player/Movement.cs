@@ -4,99 +4,111 @@ using UnityEngine;
 
 public class Movement : MonoBehaviour
 {
-    [SerializeField] private float walkSpeed = 8f;
-    [SerializeField] private float runSpeed = 14f;
-    [SerializeField] private float maxVelocityChange = 10.0f;
-    [SerializeField] private float jumpHeight = 5.0f;
+    [Header("Movement")]
+    [SerializeField] private float moveSpeed;
+    [SerializeField] private float groundDrag;
+    [SerializeField] private float jumpForce;
+    [SerializeField] private float jumpCooldown;
+    [SerializeField] private float airMultiplier;
+    bool readyToJump;
 
-    private Vector2 input;
-    private Rigidbody rb;
+    [HideInInspector] public float walkSpeed;
+    [HideInInspector] public float sprintSpeed;
 
-    private bool sprinting;
-    private bool jumping;
+    [Header("Keybinds")]
+    public KeyCode jumpKey = KeyCode.Space;
 
-    private bool grounded = false;
+    [Header("Ground Check")]
+    public float playerHeight;
+    public LayerMask whatIsGround;
+    bool grounded;
 
-    // Start is called before the first frame update
-    void Start()
+    float horizontalInput;
+    float verticalInput;
+
+    Vector3 moveDirection;
+
+    Rigidbody rb;
+
+    private void Start()
     {
         rb = GetComponent<Rigidbody>();
+        rb.freezeRotation = true;
+
+        readyToJump = true;
     }
 
-    // Update is called once per frame
-    void Update()
+    private void Update()
     {
-        input = new Vector2(Input.GetAxis("Horizontal"), Input.GetAxis("Vertical"));
-        input.Normalize();
+        // ground check
+        grounded = Physics.Raycast(transform.position, Vector3.down, playerHeight * 0.5f + 0.3f, whatIsGround);
 
-        sprinting = Input.GetButton("Sprint");
-        jumping = Input.GetButton("Jump");
-    }
+        MyInput();
+        SpeedControl();
 
-    private void OnTriggerStay(Collider other)
-    {
-        grounded = true;
+        // handle drag
+        if (grounded)
+            rb.drag = groundDrag;
+        else
+            rb.drag = 0;
     }
 
     private void FixedUpdate()
     {
-        if(grounded)
-        {
-            if (jumping)
-            {
-                rb.velocity = new Vector3(rb.velocity.x, jumpHeight, rb.velocity.z);
-            }
-            else if (input.magnitude > 0.5f)
-            {
-                rb.AddForce(CalculateMovement(sprinting ? runSpeed : walkSpeed), ForceMode.VelocityChange);
-            }
-            else
-            {
-                var velocity1 = rb.velocity;
-                velocity1 = new Vector3(velocity1.x * 0.2f * Time.fixedDeltaTime, velocity1.y, velocity1.z * 0.2f * Time.fixedDeltaTime);
-                rb.velocity = velocity1;
-            }
-        } 
-        else
-        {
-            if (input.magnitude > 0.5f)
-            {
-                rb.AddForce(CalculateMovement(sprinting ? runSpeed : walkSpeed), ForceMode.VelocityChange);
-            }
-            else
-            {
-                var velocity1 = rb.velocity;
-                velocity1 = new Vector3(velocity1.x * 0.2f * Time.fixedDeltaTime, velocity1.y, velocity1.z * 0.2f * Time.fixedDeltaTime);
-                rb.velocity = velocity1;
-            }
-        }
-        
-        grounded = false;
+        MovePlayer();
     }
 
-    Vector3 CalculateMovement(float _speed) 
+    private void MyInput()
     {
-        Vector3 targetVelocity = new Vector3(input.x, 0, input.y);
-        targetVelocity = transform.TransformDirection(targetVelocity);
+        horizontalInput = Input.GetAxisRaw("Horizontal");
+        verticalInput = Input.GetAxisRaw("Vertical");
 
-        targetVelocity *= _speed;
-
-        Vector3 velocity = rb.velocity;
-
-        if (input.magnitude > 0.5f)
+        // when to jump
+        if (Input.GetKey(jumpKey) && readyToJump && grounded)
         {
-            Vector3 velocityChange = (targetVelocity - velocity);
+            readyToJump = false;
 
-            velocityChange.x = Mathf.Clamp(velocityChange.x, -maxVelocityChange, maxVelocityChange);
-            velocityChange.z = Mathf.Clamp(velocityChange.z, -maxVelocityChange, maxVelocityChange);
+            Jump();
 
-            velocityChange.y = 0;
-
-            return velocityChange;
+            Invoke(nameof(ResetJump), jumpCooldown);
         }
-        else
+    }
+
+    private void MovePlayer()
+    {
+        // calculate movement direction
+        moveDirection = gameObject.transform.forward * verticalInput + gameObject.transform.right * horizontalInput;
+
+        // on ground
+        if (grounded)
+            rb.AddForce(moveDirection.normalized * moveSpeed * 10f, ForceMode.Force);
+
+        // in air
+        else if (!grounded)
+            rb.AddForce(moveDirection.normalized * moveSpeed * 10f * airMultiplier, ForceMode.Force);
+    }
+
+    private void SpeedControl()
+    {
+        Vector3 flatVel = new Vector3(rb.velocity.x, 0f, rb.velocity.z);
+
+        // limit velocity if needed
+        if (flatVel.magnitude > moveSpeed)
         {
-            return new Vector3();
+            Vector3 limitedVel = flatVel.normalized * moveSpeed;
+            rb.velocity = new Vector3(limitedVel.x, rb.velocity.y, limitedVel.z);
         }
+    }
+
+    private void Jump()
+    {
+        // reset y velocity
+        rb.velocity = new Vector3(rb.velocity.x, 0f, rb.velocity.z);
+
+        rb.AddForce(transform.up * jumpForce, ForceMode.Impulse);
+    }
+    private void ResetJump()
+    {
+        readyToJump = true;
     }
 }

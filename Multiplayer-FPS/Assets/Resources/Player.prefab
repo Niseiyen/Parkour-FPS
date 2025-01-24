@@ -1022,7 +1022,6 @@ GameObject:
   - component: {fileID: 8084005488615408035}
   - component: {fileID: 8084005488615408032}
   - component: {fileID: 8084005488615408033}
-  - component: {fileID: 5356053850088673368}
   - component: {fileID: 8084005488615408036}
   - component: {fileID: 8391746717722138635}
   - component: {fileID: 8479045397479215836}
@@ -1133,19 +1132,6 @@ Rigidbody:
   m_Interpolate: 0
   m_Constraints: 80
   m_CollisionDetection: 0
---- !u!135 &5356053850088673368
-SphereCollider:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 8084005488615408030}
-  m_Material: {fileID: 0}
-  m_IsTrigger: 1
-  m_Enabled: 1
-  serializedVersion: 2
-  m_Radius: 0.5
-  m_Center: {x: 0, y: -0.69, z: 0}
 --- !u!114 &8084005488615408036
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -1158,10 +1144,18 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 61e6907d42b852a44b75f4d7ed51b1b5, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  moveSpeed: 7
+  groundDrag: 5
+  jumpForce: 12
+  jumpCooldown: 0.25
+  airMultiplier: 0.4
   walkSpeed: 8
-  runSpeed: 14
-  maxVelocityChange: 10
-  jumpHeight: 5
+  sprintSpeed: 0
+  jumpKey: 32
+  playerHeight: 2
+  whatIsGround:
+    serializedVersion: 2
+    m_Bits: 128
 --- !u!114 &8391746717722138635
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -1176,7 +1170,6 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   movement: {fileID: 8084005488615408036}
   camera: {fileID: 8084005488673494320}
-  nickname: 
   nicknameText: {fileID: 4997835489731836815}
 --- !u!114 &8479045397479215836
 MonoBehaviour:
@@ -1317,7 +1310,7 @@ Camera:
   m_Depth: -1
   m_CullingMask:
     serializedVersion: 2
-    m_Bits: 55
+    m_Bits: 183
   m_RenderingPath: -1
   m_TargetTexture: {fileID: 0}
   m_TargetDisplay: 0

@@ -843,7 +843,7 @@ GameObject:
   - component: {fileID: 148187567}
   - component: {fileID: 148187566}
   - component: {fileID: 148187565}
-  m_Layer: 0
+  m_Layer: 7
   m_Name: Props1 (1)
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -2489,7 +2489,7 @@ GameObject:
   - component: {fileID: 494600539}
   - component: {fileID: 494600538}
   - component: {fileID: 494600537}
-  m_Layer: 0
+  m_Layer: 7
   m_Name: Stair
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -3832,7 +3832,7 @@ GameObject:
   - component: {fileID: 569778112}
   - component: {fileID: 569778111}
   - component: {fileID: 569778110}
-  m_Layer: 0
+  m_Layer: 7
   m_Name: Props1
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -4297,7 +4297,7 @@ MonoBehaviour:
   m_TargetGraphic: {fileID: 1038846227}
   m_HandleRect: {fileID: 1038846226}
   m_Direction: 0
-  m_Value: 1
+  m_Value: 0
   m_Size: 1
   m_NumberOfSteps: 0
   m_OnValueChanged:
@@ -8091,7 +8091,7 @@ Mesh:
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
-  m_Name: pb_Mesh45888
+  m_Name: pb_Mesh60660
   serializedVersion: 10
   m_SubMeshes:
   - serializedVersion: 2
@@ -8708,7 +8708,7 @@ Mesh:
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
-  m_Name: pb_Mesh45774
+  m_Name: pb_Mesh60546
   serializedVersion: 10
   m_SubMeshes:
   - serializedVersion: 2
@@ -9069,7 +9069,7 @@ GameObject:
   - component: {fileID: 1743917225}
   - component: {fileID: 1743917224}
   - component: {fileID: 1743917223}
-  m_Layer: 0
+  m_Layer: 7
   m_Name: Cube
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -10042,7 +10042,7 @@ Mesh:
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
-  m_Name: pb_Mesh46270
+  m_Name: pb_Mesh61042
   serializedVersion: 10
   m_SubMeshes:
   - serializedVersion: 2
@@ -10487,7 +10487,7 @@ Mesh:
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
-  m_Name: pb_Mesh45918
+  m_Name: pb_Mesh60690
   serializedVersion: 10
   m_SubMeshes:
   - serializedVersion: 2
