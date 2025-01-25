@@ -8,8 +8,18 @@ public class WeaponSwitcher : MonoBehaviour
 
     private void Start()
     {
+        foreach (Transform weaponTransform in transform)
+        {
+            Weapon weapon = weaponTransform.GetComponent<Weapon>();
+            if (weapon != null)
+            {
+                weapon.InitializeWeapon();
+            }
+        }
+
         SelectWeapon();
     }
+
 
     private void Update()
     {
@@ -91,7 +101,10 @@ public class WeaponSwitcher : MonoBehaviour
                 if (weapon != null)
                 {
                     weapon.transform.localPosition = weapon.originalPosition;
+                    weapon.recoiling = false;
+                    weapon.recovering = false;
                 }
+
                 _weapon.gameObject.SetActive(false);
             }
             i++;

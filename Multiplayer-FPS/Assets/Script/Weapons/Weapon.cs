@@ -42,8 +42,8 @@ public class Weapon : MonoBehaviour
     private float recoilLength;
     private float recoverLength;
 
-    private bool recoiling;
-    private bool recovering;
+    public bool recoiling;
+    public bool recovering;
 
     private void Start()
     {
@@ -74,7 +74,7 @@ public class Weapon : MonoBehaviour
             Shoot();
         }
 
-        if (Input.GetKeyDown(KeyCode.R) && !isReloading && ammo < 30)
+        if (Input.GetKeyDown(KeyCode.R) && !isReloading && ammo < maxAmmo)
         {
             StartCoroutine(Reload());
         }
@@ -116,6 +116,7 @@ public class Weapon : MonoBehaviour
     {
         recoiling = true;
         recovering = false;
+        Debug.Log($"{gameObject.name} is recoiling.");
 
         GameObject muzzleFlashInstance = PhotonNetwork.Instantiate(this.muzzleFlash.name, muzzlePoint.position, Quaternion.identity);
 
