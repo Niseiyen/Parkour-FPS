@@ -20,16 +20,17 @@ public class Weapon : MonoBehaviour
     [SerializeField] private GameObject muzzleFlash;
     [SerializeField] private Transform muzzlePoint;
 
+    [Header("Trail")]
+    [SerializeField] private GameObject trailPrefab;
+    [SerializeField] private float trailSpeed = 50f;
+
+
     [Header("Ammo")]
     [SerializeField] private int ammo;
     [SerializeField] private int maxAmmo;
 
     [Header("UI")]
     [SerializeField] private TextMeshProUGUI ammoText;
-
-    private Animator animator;
-    private bool isReloading = false;
-    public bool isBusy { get; private set; } = false;
 
     [Header("Recoil Setting")]
     [Range(0, 2)]
@@ -44,6 +45,10 @@ public class Weapon : MonoBehaviour
 
     public bool recoiling;
     public bool recovering;
+
+    private Animator animator;
+    private bool isReloading = false;
+    public bool isBusy { get; private set; } = false;
 
     private void Start()
     {
@@ -97,14 +102,14 @@ public class Weapon : MonoBehaviour
         animator.SetTrigger("Reload");
 
         AnimatorStateInfo stateInfo = animator.GetCurrentAnimatorStateInfo(0);
-        float reloadDuration = stateInfo.length - 0.2f; 
+        float reloadDuration = stateInfo.length - 0.2f;
 
         yield return new WaitForSeconds(reloadDuration);
         ammo = maxAmmo;
 
         UpdateWeaponUI();
         isReloading = false;
-        isBusy = false; 
+        isBusy = false;
     }
 
     public void UpdateWeaponUI()
@@ -119,7 +124,6 @@ public class Weapon : MonoBehaviour
         Debug.Log($"{gameObject.name} is recoiling.");
 
         GameObject muzzleFlashInstance = PhotonNetwork.Instantiate(this.muzzleFlash.name, muzzlePoint.position, Quaternion.identity);
-
         StartCoroutine(MoveMuzzleFlash(muzzleFlashInstance));
 
         for (int i = 0; i < pelletsCount; i++)
@@ -130,33 +134,61 @@ public class Weapon : MonoBehaviour
             Vector3 direction = camera.transform.forward + new Vector3(splayOffset.x, splayOffset.y, 0);
             Ray ray = new Ray(camera.transform.position, direction);
 
-
-            RaycastHit hit;
-            if (Physics.Raycast(ray.origin, ray.direction, out hit, 100f))
+            if (Physics.Raycast(ray.origin, ray.direction, out RaycastHit hit, 100f))
             {
                 PhotonNetwork.Instantiate(hitVFX.name, hit.point, Quaternion.identity);
 
-                if (hit.transform.gameObject.GetComponent<Health>())
+                GameObject trail = PhotonNetwork.Instantiate(trailPrefab.name, muzzlePoint.position, Quaternion.identity);
+                StartCoroutine(AnimateTrail(trail, hit.point));
+
+                PhotonView targetPhotonView = hit.transform.GetComponent<PhotonView>();
+                if (targetPhotonView != null && targetPhotonView.IsMine)
+                {
+                    Debug.Log("Hit myself. Ignoring...");
+                    continue;
+                }
+
+                Health targetHealth = hit.transform.GetComponent<Health>();
+                if (targetHealth != null)
                 {
                     PhotonNetwork.LocalPlayer.AddScore(damage);
 
-                    if (damage >= hit.transform.gameObject.GetComponent<Health>().health)
+                    if (damage >= targetHealth.health)
                     {
                         RoomManager.instance.kills++;
                         RoomManager.instance.SetHashes();
                     }
 
-                    hit.transform.gameObject.GetComponent<PhotonView>().RPC("TakeDamage", RpcTarget.All, damage, transform.position);
+                    targetPhotonView.RPC("TakeDamage", RpcTarget.All, damage, transform.position);
                 }
             }
         }
     }
 
+    private IEnumerator AnimateTrail(GameObject trail, Vector3 targetPosition)
+    {
+        float time = 0f;
+        Vector3 startPosition = trail.transform.position;
+
+        while (time < 1f)
+        {
+            time += Time.deltaTime * trailSpeed / Vector3.Distance(startPosition, targetPosition);
+            trail.transform.position = Vector3.Lerp(startPosition, targetPosition, time);
+            yield return null;
+        }
+
+        trail.transform.position = targetPosition;
+
+        PhotonNetwork.Destroy(trail);
+    }
+
+
+
     private IEnumerator MoveMuzzleFlash(GameObject muzzleFlashInstance)
     {
         float time = 0f;
         Vector3 initialPosition = muzzleFlashInstance.transform.position;
-        Vector3 randomOffset = new Vector3(Random.Range(-0.1f, 0.1f), Random.Range(-0.1f, 0.1f), 0f); 
+        Vector3 randomOffset = new Vector3(Random.Range(-0.1f, 0.1f), Random.Range(-0.1f, 0.1f), 0f);
 
         while (time < 0.2f)
         {

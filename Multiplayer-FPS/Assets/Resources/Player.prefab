@@ -1656,6 +1656,8 @@ MonoBehaviour:
   hitVFX: {fileID: 2708598583397607911, guid: 6398d43fe79ea0140913dc5530c646af, type: 3}
   muzzleFlash: {fileID: 119183615461286708, guid: 141e1779869c79845bd243610f187f47, type: 3}
   muzzlePoint: {fileID: 7726628766749326780}
+  trailPrefab: {fileID: 1367619002952535313, guid: 664c64bbb000f5e428ca3b8f7e0ea923, type: 3}
+  trailSpeed: 100
   ammo: 30
   maxAmmo: 30
   ammoText: {fileID: 2252666444571243283}
@@ -1776,6 +1778,8 @@ MonoBehaviour:
   hitVFX: {fileID: 2708598583397607911, guid: 6398d43fe79ea0140913dc5530c646af, type: 3}
   muzzleFlash: {fileID: 119183615461286708, guid: 141e1779869c79845bd243610f187f47, type: 3}
   muzzlePoint: {fileID: 2782710018893715248}
+  trailPrefab: {fileID: 1367619002952535313, guid: 664c64bbb000f5e428ca3b8f7e0ea923, type: 3}
+  trailSpeed: 100
   ammo: 3
   maxAmmo: 3
   ammoText: {fileID: 2252666444571243283}
@@ -1928,6 +1932,8 @@ MonoBehaviour:
   hitVFX: {fileID: 2708598583397607911, guid: 6398d43fe79ea0140913dc5530c646af, type: 3}
   muzzleFlash: {fileID: 119183615461286708, guid: 141e1779869c79845bd243610f187f47, type: 3}
   muzzlePoint: {fileID: 4771752319270236564}
+  trailPrefab: {fileID: 1367619002952535313, guid: 664c64bbb000f5e428ca3b8f7e0ea923, type: 3}
+  trailSpeed: 100
   ammo: 1
   maxAmmo: 1
   ammoText: {fileID: 2252666444571243283}

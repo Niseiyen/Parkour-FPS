@@ -1,6 +1,7 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using Photon.Pun;
 
 public class JumpPad : MonoBehaviour
 {
@@ -17,7 +18,7 @@ public class JumpPad : MonoBehaviour
         if(collision.gameObject.CompareTag("Player"))
         {
             continueFX.SetActive(false);
-            Instantiate(bounceFX, bounceFXLocation.position, Quaternion.identity);
+            PhotonNetwork.Instantiate(bounceFX.name, bounceFXLocation.position, Quaternion.identity);
             collision.gameObject.GetComponent<Rigidbody>().AddForce(Vector3.up * bounceForce, ForceMode.Impulse);
         }
     }

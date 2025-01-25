@@ -11,6 +11,8 @@ public class Health : MonoBehaviour
     public int health = 100;
     public bool isLocalPlayer;
 
+    private bool hasDied = false;
+
     [Header("UI")]
     [SerializeField] private TextMeshProUGUI healthText;
 
@@ -18,6 +20,8 @@ public class Health : MonoBehaviour
     [PunRPC]
     public void TakeDamage(int _damage, Vector3 damagePosition)
     {
+        if(hasDied) return;
+
         health -= _damage;
 
         damageIndicator.damageLocation = damagePosition;
@@ -29,6 +33,8 @@ public class Health : MonoBehaviour
         healthText.text = health.ToString();
         if (health <= 0)
         {
+            hasDied = true;
+
             if(isLocalPlayer)
             {
                 RoomManager.instance.SpawnPlayer();
